@@ -1,3 +1,4 @@
+
 /**
  * Created by chimera on 9/11/17.
  */
@@ -10,8 +11,9 @@ public class IndexBuilderThread implements Runnable{
         }
 
         @Override
-        public void run() {
-            System.out.println(doc.toString());
+        public void run()
+        {
+//            System.out.println(doc.toString());
         }
     }
 

@@ -13,7 +13,6 @@ public class JsonStreamParser {
     private FileInputStream fis = null;
     private JsonReader reader = null;
     private Gson gson = null;
-    private ExecutorService executor=null;
 //    private ArrayList<Document> docList=new ArrayList<Document>();
 
 
@@ -25,8 +24,6 @@ public class JsonStreamParser {
     public void start() throws IOException
     {
         gson= new GsonBuilder().create();
-        executor = Executors.newFixedThreadPool(100);
-
         // Read file in stream mode
         reader.beginObject();
         reader.nextName();
@@ -35,11 +32,12 @@ public class JsonStreamParser {
         while (reader.hasNext())
         {
             // Read data into object model
-//            Document doc = gson.fromJson(reader, Document.class);
-            Runnable indexJob = new IndexBuilderThread(gson.fromJson(reader, Document.class));
-            executor.execute(indexJob);
+            Document doc = gson.fromJson(reader, Document.class);
+            Runnable indexJob = new IndexBuilderThread(doc);
+            Runnable writeJob = new DocumentWriter(doc);
+            Main.executor.execute(indexJob);
+            Main.executor.execute(writeJob);
         }
-        executor.shutdown();
         reader.close();
         }
     }
