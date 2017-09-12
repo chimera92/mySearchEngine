@@ -1,14 +1,15 @@
+package search;
+
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
  * Created by chimera on 9/11/17.
  */
-public class DocumentWriter implements Runnable{
+public class DocumentWriterThread implements Runnable{
     private Document doc;
-    DocumentWriter(Document doc)
+    DocumentWriterThread(Document doc)
     {
         this.doc=doc;
     }
