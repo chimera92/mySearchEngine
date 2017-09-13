@@ -18,12 +18,11 @@ public class DocumentWriterThread implements Runnable{
     public void run()
     {
 
-        String data = "Test data";
-        File file=new File("corpus/"+doc.getTitle().hashCode()+".txt");
+        File file=new File("/home/chimera/corpus/"+doc.getTitle().hashCode()+".txt");
         file.getParentFile().mkdirs();
 
         try {
-            Files.write(Paths.get(file.toString()),data.getBytes());
+            Files.write(Paths.get(file.toString()),doc.getBody().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

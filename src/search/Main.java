@@ -11,10 +11,8 @@ public class Main {
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException
     {
         JsonStreamParser parser = new JsonStreamParser(args[0]);
-        executor = Executors.newFixedThreadPool(1000);
-
+        executor = Executors.newFixedThreadPool(100);
         parser.start();
         executor.shutdown();
-
     }
 }
