@@ -1,12 +1,13 @@
-package search;
+package Search;
 
 /**
  * Created by chimera on 9/9/17.
  */
-public class Document {
+@SuppressWarnings({"DefaultFileTemplate", "unused"})
+class Document {
     private String body;
     private String title;
-    private String url;
+//    private String url;
 
 
     @Override
@@ -17,16 +18,8 @@ public class Document {
     public  String getTitle() {
         return title;
     }
-    public void setTitle(String title)
-    {
-        this.title=title;
-    }
-
     public  String getBody() {
         return body;
     }
-    public void setBody(String body)
-    {
-        this.body=body;
-    }
+
 }

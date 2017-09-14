@@ -1,4 +1,4 @@
-package search;
+package Search;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -7,8 +7,9 @@ import java.nio.file.Paths;
 /**
  * Created by chimera on 9/11/17.
  */
-public class DocumentWriterThread implements Runnable{
-    private Document doc;
+@SuppressWarnings("DefaultFileTemplate")
+class DocumentWriterThread implements Runnable{
+    private final Document doc;
     DocumentWriterThread(Document doc)
     {
         this.doc=doc;
@@ -19,6 +20,7 @@ public class DocumentWriterThread implements Runnable{
     {
 
         File file=new File("/home/chimera/corpus/"+doc.getTitle().hashCode()+".txt");
+        //noinspection ResultOfMethodCallIgnored
         file.getParentFile().mkdirs();
 
         try {

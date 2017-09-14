@@ -1,4 +1,4 @@
-package search;
+package Search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,12 +7,15 @@ import java.util.Map;
 /**
  * Created by chimera on 9/11/17.
  */
-public class IndexBuilderThread implements Runnable{
+@SuppressWarnings("DefaultFileTemplate")
+class IndexBuilderThread implements Runnable{
 
-        private Document doc;
+        private final Document doc;
+        private final GlobalPosIndex globalPosIndex;
 
-        public IndexBuilderThread(Document doc){
+        public IndexBuilderThread(GlobalPosIndex globalPosIndex, Document doc){
             this.doc=doc;
+            this.globalPosIndex=globalPosIndex;
         }
 
         @Override
@@ -58,6 +61,11 @@ public class IndexBuilderThread implements Runnable{
                     posIndex.put(token,temp);
                 }
             }
+            Map.Entry key_val;
+            for (Object o : posIndex.entrySet()) {
+                key_val = (Map.Entry) o;
+                temp = (ArrayList) key_val.getValue();
+                globalPosIndex.add((String) key_val.getKey(), doc.getTitle().hashCode(), (Integer[]) temp.toArray(new Integer[temp.size()]));
+            }
         }
     }
-

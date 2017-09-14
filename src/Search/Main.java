@@ -1,18 +1,25 @@
-package search;
+package Search;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Main {
+class Main {
 
-    public static ExecutorService executor=null;
+    private static ExecutorService executor=null;
+
+    public static void submitJob(Runnable job)
+    {
+        executor.execute(job);
+    }
+
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException
     {
         JsonStreamParser parser = new JsonStreamParser(args[0]);
-        executor = Executors.newFixedThreadPool(100);
-        parser.start();
+        executor = Executors.newFixedThreadPool(150);
+        GlobalPosIndex globalPosIndex=new GlobalPosIndex();
+        parser.start(globalPosIndex);
         executor.shutdown();
     }
 }
