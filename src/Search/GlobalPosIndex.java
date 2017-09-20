@@ -15,7 +15,6 @@ class GlobalPosIndex {
     public GlobalPosIndex()
     {
         universalIndex = Collections.synchronizedMap(new HashMap<String,HashMap<Integer,Integer[]>>());
-
     }
 
 

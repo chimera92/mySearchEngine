@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 /**
  * Created by chimera on 9/11/17.
  */
+
+
 @SuppressWarnings("DefaultFileTemplate")
 class DocumentWriterThread implements Runnable{
     private final Document doc;

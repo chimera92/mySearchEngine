@@ -1,8 +1,11 @@
 package Search;
 
+import org.tartarus.martin.Stemmer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Created by chimera on 9/11/17.
@@ -21,11 +24,14 @@ class IndexBuilderThread implements Runnable{
         @Override
         public void run()
         {
+
             Map posIndex=new HashMap<String,ArrayList<Integer>>();
             String[] tokens = doc.getBody().split(" ");
             String[] token_arr;
             ArrayList temp=new ArrayList<Integer>();
             String token;
+
+            Stemmer stem=new Stemmer();
 
             for(int i=0;i<tokens.length;i++)
             {
@@ -49,6 +55,7 @@ class IndexBuilderThread implements Runnable{
                     }
                 }
                 token=String.join("",token_arr);
+
                 if(posIndex.containsKey(token))
                 {
                     temp = (ArrayList) posIndex.get(token);

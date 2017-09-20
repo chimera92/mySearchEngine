@@ -16,10 +16,21 @@ class Main {
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException
     {
+        long startTime = System.currentTimeMillis();
         JsonStreamParser parser = new JsonStreamParser(args[0]);
-        executor = Executors.newFixedThreadPool(150);
+        executor = Executors.newFixedThreadPool(200);
         GlobalPosIndex globalPosIndex=new GlobalPosIndex();
         parser.start(globalPosIndex);
+
         executor.shutdown();
+        boolean shutdown = false;
+        while(shutdown==false)
+        {
+            Thread.sleep(1000);
+            shutdown=executor.isTerminated();
+        }
+        long endTime = System.currentTimeMillis();
+
+        System.out.println(endTime-startTime);
     }
 }
