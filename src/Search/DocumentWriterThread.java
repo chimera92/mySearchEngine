@@ -21,7 +21,7 @@ class DocumentWriterThread implements Runnable{
     public void run()
     {
 
-        File file=new File("/home/chimera/corpus/"+doc.getTitle().hashCode()+".txt");
+        File file=new File("/home/chimera/corpus/"+doc.getId()+".txt");
         //noinspection ResultOfMethodCallIgnored
         file.getParentFile().mkdirs();
 

@@ -7,6 +7,7 @@ package Search;
 class Document {
     private String body;
     private String title;
+    private int id;
 //    private String url;
 
 
@@ -20,6 +21,14 @@ class Document {
     }
     public  String getBody() {
         return body;
+    }
+
+    public void setId(int id)
+    {
+        this.id=id;
+    }
+    public int getId(){
+        return id;
     }
 
 }

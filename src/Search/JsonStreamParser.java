@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 class JsonStreamParser {
 
     private JsonReader reader = null;
+    private int docCount=0;
 
 
     public JsonStreamParser(String ipFile) throws  IOException {
@@ -36,6 +37,8 @@ class JsonStreamParser {
         {
             // Read data into object
             doc = gson.fromJson(reader, Document.class);
+            doc.setId(docCount);
+            docCount++;
             indexJob = new IndexBuilderThread(globalPosIndex,doc);
             writeJob = new DocumentWriterThread(doc);
             Main.submitJob(indexJob);
