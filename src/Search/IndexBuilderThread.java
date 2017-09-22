@@ -1,6 +1,6 @@
 package Search;
 
-import org.tartarus.martin.Stemmer;
+import org.tartarus.snowball.ext.PorterStemmer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,11 +16,21 @@ class IndexBuilderThread implements Runnable{
         private final Document doc;
         private final GlobalPosIndex globalPosIndex;
         private final int docId;
+        private PorterStemmer stemmer;
 
     public IndexBuilderThread(GlobalPosIndex globalPosIndex, Document doc){
             this.doc=doc;
             this.docId=doc.getId();
             this.globalPosIndex=globalPosIndex;
+            this.stemmer = new PorterStemmer();
+        }
+
+        private String stem(String input)
+        {
+            stemmer.setCurrent(input);
+            stemmer.stem();
+//            System.out.println(stemmer.getCurrent());
+            return stemmer.getCurrent();
         }
 
         @Override
@@ -31,10 +41,12 @@ class IndexBuilderThread implements Runnable{
 
             String[] tokens = doc.getBody().split("\\s+");
             String[] token_arr;
-            ArrayList temp=new ArrayList<Integer>();
+            ArrayList tempList=new ArrayList<Integer>();
+            ArrayList newList=new ArrayList<Integer>();
             String token;
 
             Integer i=0;
+
 
             for (String tempToken:tokens)
             {
@@ -48,35 +60,33 @@ class IndexBuilderThread implements Runnable{
                 {
                     for(int j = 0; j< token_arr.length; j++)
                     {
-                        if(posIndex.containsKey(token_arr[j]))
+                        token=stem(token_arr[j]);
+                        if(posIndex.containsKey(token))
                         {
-                            temp= (ArrayList) posIndex.get(token_arr[j]);
-                            temp.add(i+j);
-                            posIndex.put(token_arr[j],temp.clone());
+                            tempList= (ArrayList) posIndex.get(token);
+                            tempList.add(i+j);
                         }
                         else
                         {
-                            temp.clear();
-                            temp.add(docId);
-                            temp.add(i+j);
-                            posIndex.put(token_arr[j],temp.clone());
+                            newList.clear();
+                            newList.add(docId);
+                            newList.add(i+j);
+                            posIndex.put(token,newList.clone());
                         }
                     }
                 }
-                token=String.join("",token_arr);
+                token=stem(String.join("",token_arr));
 
-//                System.out.println(i+token);
                 if(posIndex.containsKey(token))
                 {
-                    temp = (ArrayList) posIndex.get(token);
-                    temp.add(i);
-                    posIndex.put(token,temp.clone());
+                    tempList = (ArrayList) posIndex.get(token);
+                    tempList.add(i);
                 }
                 else {
-                    temp.clear();
-                    temp.add(docId);
-                    temp.add(i);
-                    posIndex.put(token,temp.clone());
+                    newList.clear();
+                    newList.add(docId);
+                    newList.add(i);
+                    posIndex.put(token,newList.clone());
                 }
                 i++;
             }
@@ -84,7 +94,7 @@ class IndexBuilderThread implements Runnable{
             Map.Entry key_val;
             for (Object o : posIndex.entrySet()) {
                 key_val = (Map.Entry) o;
-                temp = (ArrayList) key_val.getValue();
+                tempList = (ArrayList) key_val.getValue();
 
 //                Debug
 //                System.out.println(key_val.getKey());
@@ -93,7 +103,7 @@ class IndexBuilderThread implements Runnable{
 //                    System.out.print(temp.get(j)+" ");
 //                }
 //                System.out.println();
-                globalPosIndex.add((String) key_val.getKey(),(Integer[]) temp.toArray(new Integer[temp.size()]));
+                globalPosIndex.add((String) key_val.getKey(),(Integer[]) tempList.toArray(new Integer[tempList.size()]));
             }
         }
     }

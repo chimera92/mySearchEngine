@@ -14,11 +14,14 @@ import java.util.Map;
 class GlobalPosIndex {
     private final Map universalIndex;
     private ArrayList tempList;
+    private ArrayList newList;
 
     public GlobalPosIndex()
     {
         universalIndex = Collections.synchronizedMap(new HashMap<String,ArrayList[]>());
         tempList =new ArrayList();
+        newList =new ArrayList();
+
     }
 
     public void add(String key, Integer[] posArray)
@@ -29,15 +32,16 @@ class GlobalPosIndex {
             {
                 tempList = (ArrayList) universalIndex.get(key);
 //                tempList= this.binInsert((ArrayList) tempList.clone(), posArray.clone());
-                tempList= this.binInsert(tempList, posArray);
-                universalIndex.put(key, tempList.clone());
+                this.binInsert(tempList, posArray);
+//*                universalIndex.put(key, tempList.clone());
+//                universalIndex.put(key, tempList);
             }
             else
             {
-                tempList.clear();
+                newList.clear();
 //                tempList.add(posArray.clone());
-                tempList.add(posArray);
-                universalIndex.put(key, tempList.clone());
+                newList.add(posArray);
+                universalIndex.put(key, newList.clone());
             }
 
         }

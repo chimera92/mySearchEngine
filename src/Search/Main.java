@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 class Main {
 
@@ -23,15 +24,8 @@ class Main {
         parser.start(globalPosIndex);
 
         executor.shutdown();
-        boolean shutdown = false;
-        while(shutdown==false)
-        {
-            Thread.sleep(1000);
-            shutdown=executor.isTerminated();
-        }
-
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MICROSECONDS);
         long endTime = System.currentTimeMillis();
-
         System.out.println(endTime-startTime);
     }
 }
