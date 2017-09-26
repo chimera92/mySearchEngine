@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 class JsonStreamParser {
 
     private JsonReader reader = null;
-    private int docCount=0;
+    private static int docCount=0;
 
 
     public JsonStreamParser(String ipFile) throws  IOException {

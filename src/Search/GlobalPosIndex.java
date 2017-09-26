@@ -23,6 +23,10 @@ class GlobalPosIndex {
         newList =new ArrayList<Integer[]>();
 
     }
+    public void clear()
+    {
+        universalIndex.clear();
+    }
 
     public void add(String key, Integer[] posArray)
     {

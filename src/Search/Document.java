@@ -8,7 +8,7 @@ class Document {
     private String body;
     private String title;
     private int id;
-//    private String url;
+    private String uri;
 
 
     @Override

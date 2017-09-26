@@ -1,5 +1,7 @@
 package Search;
 
+import org.tartarus.snowball.ext.PorterStemmer;
+
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
@@ -10,10 +12,20 @@ import java.util.concurrent.TimeUnit;
 class Main {
 
     private static ExecutorService executor=null;
+    private PorterStemmer stemmer=new PorterStemmer();
+
 
     public static void submitJob(Runnable job)
     {
         executor.execute(job);
+    }
+
+    private String stem(String input)
+    {
+        stemmer.setCurrent(input);
+        stemmer.stem();
+//            System.out.println(stemmer.getCurrent());
+        return stemmer.getCurrent();
     }
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException
@@ -37,7 +49,7 @@ class Main {
             }
             else
             {
-                qp.processQuery(in);
+//                qp.parseQuery(in);
             }
             if(!reader.hasNextLine())
             {
