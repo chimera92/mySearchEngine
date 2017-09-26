@@ -1,7 +1,6 @@
 package Search;
 
 import org.tartarus.snowball.ext.PorterStemmer;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,12 +36,12 @@ class IndexBuilderThread implements Runnable{
         public void run()
         {
 
-            Map posIndex=new HashMap<String,ArrayList<Integer>>();
+            Map<String ,ArrayList<Integer>> posIndex=new HashMap<String,ArrayList<Integer>>();
 
             String[] tokens = doc.getBody().split("\\s+");
             String[] token_arr;
-            ArrayList tempList=new ArrayList<Integer>();
-            ArrayList newList=new ArrayList<Integer>();
+            ArrayList<Integer> tempList;
+            ArrayList<Integer> newList=new ArrayList<Integer>();
             String token;
             String trimmedToken;
 
@@ -74,7 +73,7 @@ class IndexBuilderThread implements Runnable{
                         token=stem(trimmedToken);
                         if(posIndex.containsKey(token))
                         {
-                            tempList= (ArrayList) posIndex.get(token);
+                            tempList=  posIndex.get(token);
                             tempList.add(i+j);
                         }
                         else
@@ -82,7 +81,7 @@ class IndexBuilderThread implements Runnable{
                             newList.clear();
                             newList.add(docId);
                             newList.add(i+j);
-                            posIndex.put(token,newList.clone());
+                            posIndex.put(token, (ArrayList<Integer>) newList.clone());
                         }
                         j++;
                     }
@@ -91,31 +90,25 @@ class IndexBuilderThread implements Runnable{
 
                 if(posIndex.containsKey(token))
                 {
-                    tempList = (ArrayList) posIndex.get(token);
+                    tempList =  posIndex.get(token);
                     tempList.add(i);
                 }
                 else {
                     newList.clear();
                     newList.add(docId);
                     newList.add(i);
-                    posIndex.put(token,newList.clone());
+                    posIndex.put(token, (ArrayList<Integer>) newList.clone());
                 }
                 i++;
             }
 
-            Map.Entry key_val;
+            Map.Entry<String,ArrayList<Integer>> key_val;
             for (Object o : posIndex.entrySet()) {
                 key_val = (Map.Entry) o;
-                tempList = (ArrayList) key_val.getValue();
+                tempList =  key_val.getValue();
 
-//                Debug
-//                System.out.println(key_val.getKey());
-//                for(int j=0;j<temp.size();j++)
-//                {
-//                    System.out.print(temp.get(j)+" ");
-//                }
-//                System.out.println();
-                globalPosIndex.add((String) key_val.getKey(),(Integer[]) tempList.toArray(new Integer[tempList.size()]));
+
+                globalPosIndex.add(key_val.getKey(), tempList.toArray(new Integer[tempList.size()]));
             }
         }
     }
