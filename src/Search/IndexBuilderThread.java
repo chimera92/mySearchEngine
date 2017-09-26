@@ -44,23 +44,34 @@ class IndexBuilderThread implements Runnable{
             ArrayList tempList=new ArrayList<Integer>();
             ArrayList newList=new ArrayList<Integer>();
             String token;
+            String trimmedToken;
 
             Integer i=0;
 
 
             for (String tempToken:tokens)
             {
-                if(!tempToken.matches(".*?\\w.*"))
+
+
+                trimmedToken=tempToken.toLowerCase().replaceAll("^\\W+|\\W+$|'","");
+                token_arr =trimmedToken.split("\\s*(-|\\.|\\s*,\\s*)\\s*");
+                if(tempToken.equals(""))
                 {
-//                    System.out.println(tempToken+"!!!!!!!!!!!!!!");
                     continue;
                 }
-                token_arr =tempToken.replaceAll("^\\W+|\\W+$|'","").split("\\s*-\\s*");
+
                 if(token_arr.length>1)
                 {
-                    for(int j = 0; j< token_arr.length; j++)
+                    int j=0;
+                    for(String subToken:token_arr)
                     {
-                        token=stem(token_arr[j]);
+                        trimmedToken=subToken.replaceAll("^\\W+|\\W+$|'","");
+                        if(trimmedToken.equals(""))
+                        {
+                            continue;
+                        }
+
+                        token=stem(trimmedToken);
                         if(posIndex.containsKey(token))
                         {
                             tempList= (ArrayList) posIndex.get(token);
@@ -73,6 +84,7 @@ class IndexBuilderThread implements Runnable{
                             newList.add(i+j);
                             posIndex.put(token,newList.clone());
                         }
+                        j++;
                     }
                 }
                 token=stem(String.join("",token_arr));
