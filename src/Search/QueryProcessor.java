@@ -8,18 +8,18 @@ import java.util.Map;
  * Created by chimera on 9/25/17.
  */
 public class QueryProcessor {
-//
-//    List<String> positiveLiterals;
-//    List<String> negativeLiterals;
-//    List<String> positivePhraseQueries;
-//    List<String> negativePhraseQueries;
-//
-//    public QueryProcessor() {
-//        positiveLiterals = new ArrayList<String>();
-//        negativeLiterals = new ArrayList<String>();
-//        positivePhraseQueries = new ArrayList<String>();
-//        negativePhraseQueries = new ArrayList<String>();
-//    }
+
+    List<String> positiveLiterals;
+    List<String> negativeLiterals;
+    List<String> positivePhraseQueries;
+    List<String> negativePhraseQueries;
+
+    public QueryProcessor() {
+        positiveLiterals = new ArrayList<String>();
+        negativeLiterals = new ArrayList<String>();
+        positivePhraseQueries = new ArrayList<String>();
+        negativePhraseQueries = new ArrayList<String>();
+    }
 //
 //    /**
 //     * Method will parse query and extract all literals and populate positiveLiterals, negativeLiterals,

@@ -1,9 +1,8 @@
 package Search;
 
 import org.tartarus.snowball.ext.PorterStemmer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
 
 
 /**
@@ -14,15 +13,17 @@ class IndexBuilderThread implements Runnable{
 
         private final Document doc;
         private final GlobalPosIndex globalPosIndex;
+        private final GlobalBiWordIndex globalBiWordIndex;
         private final int docId;
         private PorterStemmer stemmer;
 
-    public IndexBuilderThread(GlobalPosIndex globalPosIndex, Document doc){
+    public IndexBuilderThread(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex, Document doc){
             this.doc=doc;
             this.docId=doc.getId();
             this.globalPosIndex=globalPosIndex;
             this.stemmer = new PorterStemmer();
-        }
+            this.globalBiWordIndex = globalBiWordIndex;
+    }
 
         private String stem(String input)
         {
@@ -37,9 +38,12 @@ class IndexBuilderThread implements Runnable{
         {
 
             Map<String ,ArrayList<Integer>> posIndex=new HashMap<String,ArrayList<Integer>>();
-
+            HashSet<String> biIndex=new HashSet<String>();
+            LinkedList<String> biIndexFifo=new LinkedList<String>();
+            LinkedList<String> biSubIndexFifo=new LinkedList<String>();
             String[] tokens = doc.getBody().split("\\s+");
             String[] token_arr;
+
             ArrayList<Integer> tempList;
             ArrayList<Integer> newList=new ArrayList<Integer>();
             String token;
@@ -54,7 +58,7 @@ class IndexBuilderThread implements Runnable{
 
                 trimmedToken=tempToken.toLowerCase().replaceAll("^\\W+|\\W+$|'","");
                 token_arr =trimmedToken.split("\\s*(-|\\.|\\s*,\\s*)\\s*");
-                if(tempToken.equals(""))
+                if(trimmedToken.isEmpty())
                 {
                     continue;
                 }
@@ -65,12 +69,22 @@ class IndexBuilderThread implements Runnable{
                     for(String subToken:token_arr)
                     {
                         trimmedToken=subToken.replaceAll("^\\W+|\\W+$|'","");
-                        if(trimmedToken.equals(""))
+
+
+                        token=stem(trimmedToken);
+                        if(token.isEmpty())
                         {
                             continue;
                         }
 
-                        token=stem(trimmedToken);
+                        biIndexFifo.add(token);
+                        if(biSubIndexFifo.size()==3)
+                        {
+                            biSubIndexFifo.removeFirst();
+                            biIndex.add(String.join(" ", biSubIndexFifo));
+
+                        }
+
                         if(posIndex.containsKey(token))
                         {
                             tempList=  posIndex.get(token);
@@ -87,6 +101,18 @@ class IndexBuilderThread implements Runnable{
                     }
                 }
                 token=stem(String.join("",token_arr));
+                if(token.isEmpty())
+                {
+                    continue;
+                }
+
+
+                biIndexFifo.add(token);
+                if(biIndexFifo.size()==3)
+                {
+                    biIndexFifo.removeFirst();
+                    biIndex.add(String.join(" ", biIndexFifo));
+                }
 
                 if(posIndex.containsKey(token))
                 {
@@ -109,6 +135,11 @@ class IndexBuilderThread implements Runnable{
 
 
                 globalPosIndex.add(key_val.getKey(), tempList.toArray(new Integer[tempList.size()]));
+            }
+
+            for(String key:biIndex)
+            {
+                globalBiWordIndex.add(key,docId);
             }
         }
     }

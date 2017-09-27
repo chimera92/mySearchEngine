@@ -22,7 +22,7 @@ class JsonStreamParser {
             reader = new JsonReader(new InputStreamReader(new FileInputStream(new File(ipFile)), "UTF-8"));
     }
 
-    public void start(GlobalPosIndex globalPosIndex) throws IOException
+    public void start(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex) throws IOException
     {
         Gson gson = new GsonBuilder().create();
         // Read file in stream mode
@@ -39,7 +39,7 @@ class JsonStreamParser {
             doc = gson.fromJson(reader, Document.class);
             doc.setId(docCount);
             docCount++;
-            indexJob = new IndexBuilderThread(globalPosIndex,doc);
+            indexJob = new IndexBuilderThread(globalPosIndex,globalBiWordIndex,doc);
             writeJob = new DocumentWriterThread(doc);
             Main.submitJob(indexJob);
             Main.submitJob(writeJob);

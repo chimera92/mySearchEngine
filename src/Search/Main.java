@@ -62,7 +62,8 @@ class Main {
         JsonStreamParser parser = new JsonStreamParser(args[0]);
         executor = Executors.newFixedThreadPool(200);
         GlobalPosIndex globalPosIndex=new GlobalPosIndex();
-        parser.start(globalPosIndex);
+        GlobalBiWordIndex globalBiWordIndex=new GlobalBiWordIndex();
+        parser.start(globalPosIndex,globalBiWordIndex);
 
         executor.shutdown();
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MICROSECONDS);

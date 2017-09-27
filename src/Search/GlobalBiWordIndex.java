@@ -9,15 +9,15 @@ import java.util.Map;
  * Created by chimera on 9/25/17.
  */
 public class GlobalBiWordIndex {
-    private final Map universalIndex;
-    private ArrayList tempList;
-    private ArrayList newList;
+    private final Map<String,ArrayList<Integer>> universalIndex;
+    private ArrayList<Integer> tempList;
+    private ArrayList<Integer> newList;
 
     public GlobalBiWordIndex()
     {
-        universalIndex = Collections.synchronizedMap(new HashMap<String,ArrayList[]>());
-        tempList =new ArrayList();
-        newList =new ArrayList();
+        universalIndex = Collections.synchronizedMap(new HashMap<String,ArrayList<Integer>>());
+        tempList =new ArrayList<Integer>();
+        newList =new ArrayList<Integer>();
 
     }
 
@@ -27,26 +27,25 @@ public class GlobalBiWordIndex {
         {
             if(universalIndex.containsKey(key))
             {
-                tempList = (ArrayList) universalIndex.get(key);
+                tempList =  universalIndex.get(key);
                 this.binInsert(tempList, docID);
             }
             else
             {
                 newList.clear();
                 newList.add(docID);
-                universalIndex.put(key, newList.clone());
+                universalIndex.put(key, (ArrayList<Integer>) newList.clone());
             }
 
         }
     }
 
-    private ArrayList binInsert(ArrayList tempListP, Integer docID)
+    private ArrayList binInsert(ArrayList<Integer> tempListP, Integer docID)
     {
         Integer insertPos;
         if(tempListP.size()==1)
         {
-            Integer[] firstPosting= (Integer[]) tempListP.get(0);
-            Integer firstVal=firstPosting[0];
+            Integer firstVal= tempListP.get(0);
             if(firstVal>docID)
             {
                 insertPos=0;
@@ -65,12 +64,12 @@ public class GlobalBiWordIndex {
         return tempListP;
     }
 
-    private int searchSortedInsertPos(ArrayList tempListP, int startP, int endP, Integer docId)
+    private int searchSortedInsertPos(ArrayList<Integer> tempListP, int startP, int endP, Integer docId)
     {
 
         if(endP==startP+1)
         {
-            if(((Integer[])tempListP.get(endP))[0]<docId)
+            if(tempListP.get(endP)<docId)
             {
                 return endP+1;
             }
@@ -81,8 +80,7 @@ public class GlobalBiWordIndex {
         }
 
         int midL=(startP+endP)/2;
-        Integer[] midPosting= (Integer[]) tempListP.get(midL);
-        Integer midVal=midPosting[0];
+        Integer midVal=tempListP.get(midL);
         if(midVal<docId)
         {
             return searchSortedInsertPos(tempListP,midL,endP,docId);
