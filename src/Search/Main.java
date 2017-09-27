@@ -40,6 +40,7 @@ class Main {
         {
             in = reader.nextLine();
             System.out.println("Enter an input");
+            System.out.println(in);
             if(in.matches("\\s*\\:q\\s*"))
             {
 
@@ -49,7 +50,8 @@ class Main {
             }
             else
             {
-//                qp.parseQuery(in);
+                System.out.println("Process");
+                qp.parseQuery(in);
             }
             if(!reader.hasNextLine())
             {
