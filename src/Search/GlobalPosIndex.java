@@ -99,4 +99,15 @@ class GlobalPosIndex {
             return searchSortedInsertPos(tempListP,startP,midL,elementP);
         }
     }
+
+    public ArrayList<Integer[]> get(String token)
+    {
+        return universalIndex.get(token);
+    }
+
+    public void printLen()
+    {
+        System.out.println(universalIndex.keySet().size());
+    }
+
 }
