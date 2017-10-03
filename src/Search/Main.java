@@ -2,7 +2,7 @@ package Search;
 
 import org.tartarus.snowball.ext.PorterStemmer;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.*;
@@ -15,27 +15,34 @@ class Main {
 
 
 
-    public static void submitJob(Runnable job)
-    {
+    public static void submitJob(Runnable job) {
         executor.execute(job);
     }
 
-    public static String stem(String input)
-    {
+    public static String stem(String input) {
         stemmer.setCurrent(input);
         stemmer.stem();
 //            System.out.println(stemmer.getCurrent());
         return stemmer.getCurrent();
     }
 
-    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException
-    {
+    public static void showDocument(String docId) throws IOException{                       //To view the Document the user requested
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File("corpus/"+docId)), "UTF-8"));
+        while(true)
+        {
+            String line = reader.readLine();
+            if(line==null)
+                break;
+            System.out.println(line);
+        }
+    }
+
+    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
 
 
         GlobalPosIndex globalPosIndex=new GlobalPosIndex();
         GlobalBiWordIndex globalBiWordIndex=new GlobalBiWordIndex();
         QueryProcessor qp=new QueryProcessor(globalPosIndex,globalBiWordIndex);
-//        System.out.println("Enter an input");
         Scanner reader = new Scanner(System.in);
         boolean moreInput=true;
         String in;
@@ -48,10 +55,10 @@ class Main {
         System.out.println(":stem <token>");
         System.out.println(":index <dir_path>");
         System.out.println(":vocab");
+        System.out.println(":show <docName>");
         System.out.println("<query>");
         System.out.println(":corpusFromJSON <json filepath>");
-        do
-        {
+        do {
 
             System.out.println("Enter an input :");
             System.out.println();
@@ -64,12 +71,19 @@ class Main {
                 case ":q": moreInput=false;
                     break;
                 case ":stem":
-                    if(command.length<2)
-                    {
+                    if(command.length<2) {
                         System.err.println("No word found to Stem..!!");
                         break;
                     }
                     System.out.println("Stem Value:\n"+stem(command[1]));
+                    break;
+
+                case ":open" :
+                    if(command.length>1) {
+                        showDocument(command[1]);
+                    }
+                    else
+                        System.err.println("Missing Document name parameter!!");
                     break;
 
                 case ":index":
@@ -89,9 +103,8 @@ class Main {
                         System.err.println("Missing filepath parameter!!");
                         break;
                     }
-//                    !!!!!!!!!!!!!!flag!!
                     executor = Executors.newFixedThreadPool(200);
-                    JsonStreamParser parser = new JsonStreamParser(globalPosIndex,globalBiWordIndex,args[0]);
+                    JsonStreamParser parser = new JsonStreamParser(globalPosIndex,globalBiWordIndex,command[1]);
                     parser.start();
                     executor.shutdown();
                     executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MICROSECONDS);
@@ -102,29 +115,24 @@ class Main {
 
                 default:
                     ArrayList<Integer[]> result = qp.parseCompoundQuery(in.toLowerCase());
-                    System.out.println(result);
+                    System.out.println();
+                    System.out.println("Search Results : ");
                     for(Integer[] x : result) {
-                        System.out.println(x[0].intValue());
+                        System.out.println(x[0].intValue()+".txt");
                     }
+                    System.out.println("Documents retrived : "+ result.size());
+                    System.out.println();
                     break;
             }
         }while(moreInput);
 
-        long startTime = System.currentTimeMillis();
-//        System.out.println("Start time = "+startTime);
-
-        long endTime = System.currentTimeMillis();
-//        System.out.println(endTime-startTime);
-        globalPosIndex.printLen();
-
-//        ArrayList<Integer[]> x =qp.queryPhrase("preserv park",4);
-//        ArrayList<Integer[]> y=qp.query("readi");
-//        ArrayList<Integer[]> aa = qp.andOperation(y,"to");
-//        System.out.println(x.toString());
+//        long startTime = System.currentTimeMillis();
+//        long endTime = System.currentTimeMillis();
 
     }
 
 }
+
 //flag
 //null in and or phrase
 //change corpus path
