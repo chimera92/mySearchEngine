@@ -42,29 +42,6 @@ class Main {
 
 
 
-//        do
-//        {
-//            in = reader.nextLine();
-//            System.out.println("Enter an input");
-//            System.out.println(in);
-//            if(in.matches("\\s*\\:q\\s*"))
-//            {
-//
-//                System.out.println("Quit!!");
-//                moreInput=false;
-//                continue;
-//            }
-//            else
-//            {
-//                System.out.println("Process");
-//                qp.parseSimpleQuery(in);
-//            }
-//            if(!reader.hasNextLine())
-//            {
-//                moreInput=false;
-//            }
-//        }while(moreInput);
-////        System.out.println(stem("top"));
 
         System.out.println("...MY SEARCH ENGINE...");
         System.out.println(":q");
@@ -124,17 +101,20 @@ class Main {
                     break;
 
                 default:
-                    ArrayList<Integer[]> result = qp.parseSimpleQuery(in);
+                    ArrayList<Integer[]> result = qp.parseCompoundQuery(in.toLowerCase());
                     System.out.println(result);
+                    for(Integer[] x : result) {
+                        System.out.println(x[0].intValue());
+                    }
                     break;
             }
         }while(moreInput);
 
         long startTime = System.currentTimeMillis();
-        System.out.println("Start time = "+startTime);
+//        System.out.println("Start time = "+startTime);
 
         long endTime = System.currentTimeMillis();
-        System.out.println(endTime-startTime);
+//        System.out.println(endTime-startTime);
         globalPosIndex.printLen();
 
 //        ArrayList<Integer[]> x =qp.queryPhrase("preserv park",4);

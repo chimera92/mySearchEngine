@@ -21,6 +21,21 @@ public class GlobalBiWordIndex {
 
     }
 
+
+    public ArrayList<Integer[]> getBiwordPosting(String key)
+    {
+        ArrayList<Integer[]> returnVal=new ArrayList<>();
+        ArrayList<Integer> docIds =universalIndex.get(key);
+        for(Integer docId:docIds)
+        {
+            Integer[] tempPostingEntry=new Integer[1];
+            tempPostingEntry[0]=docId;
+            returnVal.add(tempPostingEntry);
+
+        }
+        return returnVal;
+    }
+
     public void add(String key, Integer docID)
     {
         synchronized (universalIndex)

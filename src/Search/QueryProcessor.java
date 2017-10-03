@@ -3,7 +3,10 @@ package Search;
 import org.tartarus.snowball.ext.PorterStemmer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by chimera on 9/25/17.
@@ -14,6 +17,7 @@ public class QueryProcessor {
     private final GlobalPosIndex globalPosIndex;
     private final GlobalBiWordIndex globalBiWordIndex;
     private final PorterStemmer stemmer;
+    private HashMap<String, ArrayList<Integer[]>> queryMap;
 
     public QueryProcessor(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex)
     {
@@ -28,6 +32,36 @@ public class QueryProcessor {
      *
      * @param query
      */
+
+
+    public ArrayList<Integer[]> parseCompoundQuery(String query)
+    {
+        Pattern pattern = Pattern.compile("^(.*?)\\(([^\\(\\)]*)\\)(.*?)$");
+        queryMap=new HashMap<String, ArrayList<Integer[]>>();
+        System.out.println(query);
+
+        while(query.contains("("))
+        {
+            Matcher matcher = pattern.matcher(query);
+            if(matcher.find()) {
+
+                String extractedQuery = matcher.group(2);
+//            System.out.println(matcher.group(1)+".."+matcher.group(2)+".."+matcher.group(3));
+                queryMap.put("^_^" + extractedQuery.hashCode(), parseSimpleQuery(extractedQuery));
+                query = matcher.group(1) + " ^_^" + extractedQuery.hashCode() + " " + matcher.group(3);
+                System.out.println(query);
+            }
+            else
+            {
+                System.err.println("Invalid Query!!");
+                break;
+            }
+        }
+
+        System.out.println(query);
+        return parseSimpleQuery(query);
+    }
+
     public ArrayList<Integer[]> parseSimpleQuery(String query)
     {
         //split query on the basis of '+'
@@ -38,14 +72,6 @@ public class QueryProcessor {
         //populate all lists.
         //Keep ORing the results hence obtained.
 //        System.out.println(query);
-//        Pattern pattern = Pattern.compile("^(.*?)(\\([^\\(\\)]*\\))(.*?)$");
-//        while(query.contains("("))
-//        {
-//            Matcher matcher = pattern.matcher(query);
-//            matcher.find();
-//            System.out.println(matcher.group(1)+".."+matcher.group(2)+".."+matcher.group(3));
-//            break;
-//        }
 
 
         ArrayList<Integer[]> docList;
@@ -68,8 +94,11 @@ public class QueryProcessor {
         ArrayList<String> queryBuffer=new ArrayList<String>();
         ArrayList<String> AtomicQueries=new ArrayList<String>();
         boolean phraseBuffFlag=false;
-        for(String subAtomicQuery:subQuery.split("\\s+"))
+        for(String subAtomicQuery:subQuery.trim().split("\\s+"))
         {
+//            if (subAtomicQuery.startsWith("^_^"))
+            subAtomicQuery=subAtomicQuery.trim();
+
 //            System.out.println(subAtomicQuery);
             if (subAtomicQuery.matches("[^\"]*\"[^\"]*"))
             {
@@ -92,9 +121,17 @@ public class QueryProcessor {
             }
             else
             {
-                subAtomicQuery=subAtomicQuery.toLowerCase().replaceAll("^\\W+|\\W+$|'","");
-                AtomicQueries.add(stem(subAtomicQuery));
-            }
+//                if(subAtomicQuery.matches("^-?\\^_\\^.*"))
+//                {
+//                    AtomicQueries.add(subAtomicQuery);
+//                }
+//                else
+//                {//remove stem at this level.
+//                    subAtomicQuery=subAtomicQuery.toLowerCase().replaceAll("^\\W+|\\W+$|'","");
+                    AtomicQueries.add(subAtomicQuery);
+
+//                }
+             }
         }
 
         ArrayList<ArrayList<Integer[]>> negQueriesPosList = new ArrayList();
@@ -104,11 +141,28 @@ public class QueryProcessor {
         {
             if(q.startsWith("-"))
             {
-                negQueriesPosList.add(query(q.substring(1)));
+                if(q.matches("^-?\\^_\\^.*"))
+                {
+                    negQueriesPosList.add(queryMap.get(q.substring(1)));
+                }
+                else
+                {
+//                    q=q.substring(1).replaceAll("^\\W+|\\W+$|'","");;
+                    negQueriesPosList.add(query(q.substring(1)));
+                }
+
             }
             else
             {
-                posQueriesPosList.add(query(q));
+                if(q.startsWith("^_^"))
+                {
+                    posQueriesPosList.add(queryMap.get(q));
+                }
+                else
+                {
+//                    q=q.replaceAll("^\\W+|\\W+$|'","");
+                    posQueriesPosList.add(query(q));
+                }
             }
         }
 
@@ -117,8 +171,9 @@ public class QueryProcessor {
             System.err.println("!! Invalid Query !!");
             return new ArrayList<>();
         }
-
-        return notOperation(andOperation(posQueriesPosList),orOperation(negQueriesPosList));
+        ArrayList<Integer[]> posuniou=andOperation(posQueriesPosList);
+        ArrayList<Integer[]> notunion =orOperation(negQueriesPosList);
+        return notOperation(posuniou,notunion);
     }
 
     private String stem(String input)
@@ -149,24 +204,49 @@ public class QueryProcessor {
     {
         if(token.startsWith("\""))
         {
-            return queryPhrase(token,1);
+            return queryPhrase(token);
         }
         else
         {
-            return globalPosIndex.get(token);
+            token=token.replaceAll("^\\W+|\\W+$|'","");
+            return globalPosIndex.get(stem(token));
         }
     }
 
 
-    public ArrayList<Integer[]> queryPhrase(String phrase, int nearK)
+    public ArrayList<Integer[]> queryPhrase(String phrase)
     {
 
+        int nearK=1;
+
+
+        Pattern pattern = Pattern.compile("^(.*?)\\bnear/(\\d+)\\b(.*?)$");
+        Matcher matcher = pattern.matcher(phrase);
+        if(matcher.find())
+        {
+            nearK = Integer.parseInt(matcher.group(2));
+//            System.out.println(matcher.group(2));
+            phrase =matcher.group(1)+" "+matcher.group(3);
+        }
+
+
+
         String[] phraseTokens = phrase.replaceAll("^\"*|\"*$", "").split("\\s+");
+
+
+
 
         for(int i=0;i<phraseTokens.length;i++)
         {
             String temp=phraseTokens[i].toLowerCase().replaceAll("^\\W*|\\W*$","");
             phraseTokens[i]=this.stem(temp);
+        }
+
+        if(phraseTokens.length==2 && nearK==1)
+        {
+            String biWordKey=String.join(" ",phraseTokens);
+            System.out.println("!!!!!!!!!!");
+            return globalBiWordIndex.getBiwordPosting(biWordKey);
         }
 
         HashSet<Integer> docsToBeScanned = new HashSet<>();
@@ -231,7 +311,10 @@ public class QueryProcessor {
                                 break;
                             }
                         }
-
+                        if(found)
+                        {
+                            break;
+                        }
                     }
 //                    List<Integer> pos =new ArrayList<Integer>(Arrays.asList(termDoc));
 //                    pos=pos.subList(1,pos.size()-1);
@@ -257,6 +340,13 @@ public class QueryProcessor {
 //        ArrayList<Integer[]> queryResults = query(token);
         ArrayList<Integer[]> output = new ArrayList<Integer[]>();
         int index1=0, index2 = 0;
+        if(docIds1 == null && docIds2 == null) {
+            return output;
+        } else if(docIds1 == null) {
+            return docIds2;
+        } else if(docIds2 == null) {
+            return docIds1;
+        }
         while(index1 < docIds1.size() && index2 < docIds2.size()) {
             if(docIds1.get(index1)[0].equals(docIds2.get(index2)[0])) {
                 output.add(docIds1.get(index1));
@@ -309,8 +399,8 @@ public class QueryProcessor {
             return docIds1;
         }
 
-        while(index1 < docIds1.size()) {
-            if(docIds1.get(index1).equals(docIds2.get(index2))) {
+        while(index1 < docIds1.size() && index2<docIds2.size()) {
+            if(docIds1.get(index1)[0].equals(docIds2.get(index2)[0])) {
                 index1++;
                 index2++;
             } else if (docIds1.get(index1)[0].intValue() < docIds2.get(index2)[0].intValue()) {
@@ -319,6 +409,12 @@ public class QueryProcessor {
             } else {
                 index2++;
             }
+        }
+
+        while(index1 < docIds1.size())
+        {
+            output.add(docIds1.get(index1));
+            index1++;
         }
         return output;
     }
