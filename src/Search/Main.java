@@ -57,7 +57,7 @@ class Main {
 //            else
 //            {
 //                System.out.println("Process");
-//                qp.parseQuery(in);
+//                qp.parseSimpleQuery(in);
 //            }
 //            if(!reader.hasNextLine())
 //            {
@@ -124,7 +124,8 @@ class Main {
                     break;
 
                 default:
-                    qp.parseQuery(in);
+                    ArrayList<Integer[]> result = qp.parseSimpleQuery(in);
+                    System.out.println(result);
                     break;
             }
         }while(moreInput);
@@ -146,3 +147,4 @@ class Main {
 }
 //flag
 //null in and or phrase
+//change corpus path

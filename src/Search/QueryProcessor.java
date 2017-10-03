@@ -3,11 +3,7 @@ package Search;
 import org.tartarus.snowball.ext.PorterStemmer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by chimera on 9/25/17.
@@ -32,7 +28,7 @@ public class QueryProcessor {
      *
      * @param query
      */
-    public String[] parseQuery(String query)
+    public ArrayList<Integer[]> parseSimpleQuery(String query)
     {
         //split query on the basis of '+'
         //for each part then,
@@ -52,22 +48,22 @@ public class QueryProcessor {
 //        }
 
 
-
-
-        String[] docList=null;
+        ArrayList<Integer[]> docList;
         String[] subQueries = query.split("\\s*\\+\\s*");
-        ArrayList<ArrayList<Document>> toBeOrEdList=new ArrayList<ArrayList<Document>>();
+        ArrayList<ArrayList<Integer[]>> toBeOrEdList=new ArrayList<>();
         for(String subQuery:subQueries)
         {
 //            System.out.println(subQuery);
-            processOrLessQuery(subQuery);
+            toBeOrEdList.add(processOrLessQuery(subQuery));
         }
+
+        docList=orOperation(toBeOrEdList);
 
         return docList;
 
     }
 
-    private ArrayList<Document> processOrLessQuery(String subQuery)
+    private ArrayList<Integer[]> processOrLessQuery(String subQuery)
     {
         ArrayList<String> queryBuffer=new ArrayList<String>();
         ArrayList<String> AtomicQueries=new ArrayList<String>();
@@ -96,14 +92,33 @@ public class QueryProcessor {
             }
             else
             {
-                AtomicQueries.add(subAtomicQuery);
+                subAtomicQuery=subAtomicQuery.toLowerCase().replaceAll("^\\W+|\\W+$|'","");
+                AtomicQueries.add(stem(subAtomicQuery));
             }
         }
+
+        ArrayList<ArrayList<Integer[]>> negQueriesPosList = new ArrayList();
+        ArrayList<ArrayList<Integer[]>> posQueriesPosList = new ArrayList();
+
         for (String q:AtomicQueries)
         {
-            System.out.println("!!"+q);
+            if(q.startsWith("-"))
+            {
+                negQueriesPosList.add(query(q.substring(1)));
+            }
+            else
+            {
+                posQueriesPosList.add(query(q));
+            }
         }
-        return new ArrayList<Document>();
+
+        if(posQueriesPosList.size()<1)
+        {
+            System.err.println("!! Invalid Query !!");
+            return new ArrayList<>();
+        }
+
+        return notOperation(andOperation(posQueriesPosList),orOperation(negQueriesPosList));
     }
 
     private String stem(String input)
@@ -132,18 +147,25 @@ public class QueryProcessor {
 
     public ArrayList<Integer[]> query(String token)
     {
-        return globalPosIndex.get(token);
+        if(token.startsWith("\""))
+        {
+            return queryPhrase(token,1);
+        }
+        else
+        {
+            return globalPosIndex.get(token);
+        }
     }
 
 
-    public ArrayList<Integer[]> queryPhrase(String phrase,int nearK)
+    public ArrayList<Integer[]> queryPhrase(String phrase, int nearK)
     {
 
         String[] phraseTokens = phrase.replaceAll("^\"*|\"*$", "").split("\\s+");
 
         for(int i=0;i<phraseTokens.length;i++)
         {
-            String temp=phraseTokens[i].replaceAll("^\\W*|\\W*$","");
+            String temp=phraseTokens[i].toLowerCase().replaceAll("^\\W*|\\W*$","");
             phraseTokens[i]=this.stem(temp);
         }
 
@@ -223,52 +245,76 @@ public class QueryProcessor {
                 }
             }
 
-
         }
         return result;
     }
 
-    public ArrayList<Integer[]> orOperation(ArrayList<Integer[]> docIds, String token) {
-        ArrayList<Integer[]> queryResults = query(token);
+    public ArrayList<Integer[]> orOperation(String token1, String token2) {
+        return orOperation(query(token1), query(token2));
+    }
+
+    public ArrayList<Integer[]> orOperation(ArrayList<Integer[]> docIds1, ArrayList<Integer[]> docIds2) {
+//        ArrayList<Integer[]> queryResults = query(token);
         ArrayList<Integer[]> output = new ArrayList<Integer[]>();
         int index1=0, index2 = 0;
-        while(index1 < queryResults.size() && index2 < docIds.size()) {
-            if(queryResults.get(index1)[0].equals(docIds.get(index2)[0])) {
-                output.add(queryResults.get(index1));
+        while(index1 < docIds1.size() && index2 < docIds2.size()) {
+            if(docIds1.get(index1)[0].equals(docIds2.get(index2)[0])) {
+                output.add(docIds1.get(index1));
                 index1++;
                 index2++;
-            } else if(queryResults.get(index1)[0].intValue() < docIds.get(index2)[0].intValue()) {
-                output.add(queryResults.get(index1));
+            } else if(docIds1.get(index1)[0].intValue() < docIds2.get(index2)[0].intValue()) {
+                output.add(docIds1.get(index1));
                 index1++;
             } else {
-                output.add(docIds.get(index2));
+                output.add(docIds2.get(index2));
                 index2++;
             }
         }
 
-        while(index1< docIds.size()) {
-            output.add(docIds.get(index1));
-            index1++;
-        }
-        while(index2 < queryResults.size()) {
-            output.add(queryResults.get(index1));
+        while(index2< docIds2.size()) {
+            output.add(docIds2.get(index2));
             index2++;
         }
+        while(index1 < docIds1.size()) {
+            output.add(docIds1.get(index1));
+            index1++;
+        }
 
         return output;
     }
 
-
-    public ArrayList<Integer[]> notOperation(ArrayList<Integer[]> docIds, String token) {
+    public ArrayList<Integer[]> orOperation(ArrayList<Integer[]> docIds, String token) {
         ArrayList<Integer[]> queryResults = query(token);
+        return orOperation(docIds, queryResults);
+    }
+
+    public ArrayList<Integer[]> orOperation(ArrayList<ArrayList<Integer[]>> postingsList) {
+        ArrayList<Integer[]> output = new ArrayList<Integer[]>();
+        if(null == postingsList || postingsList.size() == 0) {
+            return output;
+        } else {
+            for(ArrayList<Integer[]> thisPosting : postingsList) {
+                output = orOperation(output, thisPosting);
+            }
+        }
+        return output;
+    }
+
+
+    public ArrayList<Integer[]> notOperation(ArrayList<Integer[]> docIds1, ArrayList<Integer[]> docIds2) {
         ArrayList<Integer[]> output = new ArrayList<Integer[]>();
         int index1 = 0, index2 = 0;
-        while(index1 < docIds.size()) {
-            if(docIds.get(index1).equals(queryResults.get(index2))) {
+        if(docIds2==null || docIds2.size()<1)
+        {
+            return docIds1;
+        }
+
+        while(index1 < docIds1.size()) {
+            if(docIds1.get(index1).equals(docIds2.get(index2))) {
                 index1++;
                 index2++;
-            } else if (docIds.get(index1)[0].intValue() < queryResults.get(index2)[0].intValue()) {
-                output.add(docIds.get(index1));
+            } else if (docIds1.get(index1)[0].intValue() < docIds2.get(index2)[0].intValue()) {
+                output.add(docIds1.get(index1));
                 index1++;
             } else {
                 index2++;
@@ -277,31 +323,55 @@ public class QueryProcessor {
         return output;
     }
 
+    public ArrayList<Integer[]> notOperation(ArrayList<Integer[]> docIds, String token) {
+        return notOperation(docIds, query(token));
+    }
 
-    public ArrayList<Integer[]> andOperation(ArrayList<Integer[]> docIds, String token) {
-        ArrayList<Integer[]> queryResults = query(token);
+    public ArrayList<Integer[]> andOperation(String token1, String token2) {
+        return andOperation(query(token1), query(token2));
+    }
+
+    public ArrayList<Integer[]> andOperation(ArrayList<ArrayList<Integer[]>> postingsList) {
+        ArrayList<Integer[]> output = postingsList.get(0);
+        //Do nothing for andOperation on single token.
+        if(null == postingsList || postingsList.size() <= 1) {
+            return output;
+        } else {
+            for(int i=1;i<postingsList.size();i++) {
+                output = andOperation(output, postingsList.get(i));
+            }
+        }
+        return output;
+    }
+
+    public ArrayList<Integer[]> andOperation(ArrayList<Integer[]> docIds1, ArrayList<Integer[]> docIds2) {
         ArrayList<Integer[]> output = new ArrayList<Integer[]>();
         int index1=0, index2 = 0;
 
 
-        if (queryResults==null || docIds==null)
+        if (docIds1==null || docIds2==null)
         {
             return output;
         }
 
 
-        while(index1 < queryResults.size() && index2 < docIds.size()) {
-            if(queryResults.get(index1)[0].equals(docIds.get(index2)[0])) {
-                output.add(queryResults.get(index1));
+        while(index1 < docIds1.size() && index2 < docIds2.size()) {
+            if(docIds1.get(index1)[0].equals(docIds2.get(index2)[0])) {
+                output.add(docIds1.get(index1));
                 index1++;
                 index2++;
-            } else if(queryResults.get(index1)[0].intValue() < docIds.get(index2)[0].intValue()) {
+            } else if(docIds1.get(index1)[0].intValue() < docIds2.get(index2)[0].intValue()) {
                 index1++;
             } else {
                 index2++;
             }
         }
         return output;
+    }
+
+    public ArrayList<Integer[]> andOperation(ArrayList<Integer[]> docIds, String token) {
+        ArrayList<Integer[]> queryResults = query(token);
+        return andOperation(docIds, queryResults);
     }
 
 
