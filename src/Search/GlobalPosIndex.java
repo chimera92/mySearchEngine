@@ -110,4 +110,13 @@ class GlobalPosIndex {
         System.out.println(universalIndex.keySet().size());
     }
 
+
+    public void showVocab(){
+        System.out.println("\nWords in the Vocabulary:");
+        for(String str : universalIndex.keySet()){
+            System.out.println(str);
+        }
+        System.out.println("\nCount of Words in Vocabulary: "+universalIndex.keySet().size());
+    }
+
 }

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by chimera on 9/25/17.
@@ -39,6 +41,19 @@ public class QueryProcessor {
         //if there is no closing quotes, ignore opening quote.
         //populate all lists.
         //Keep ORing the results hence obtained.
+//        System.out.println(query);
+//        Pattern pattern = Pattern.compile("^(.*?)(\\([^\\(\\)]*\\))(.*?)$");
+//        while(query.contains("("))
+//        {
+//            Matcher matcher = pattern.matcher(query);
+//            matcher.find();
+//            System.out.println(matcher.group(1)+".."+matcher.group(2)+".."+matcher.group(3));
+//            break;
+//        }
+
+
+
+
         String[] docList=null;
         String[] subQueries = query.split("\\s*\\+\\s*");
         ArrayList<ArrayList<Document>> toBeOrEdList=new ArrayList<ArrayList<Document>>();
@@ -100,33 +115,20 @@ public class QueryProcessor {
     }
 
 
-    public ArrayList<Integer[]> andOperation(ArrayList<Integer[]> docIds, String token) {
-        ArrayList<Integer[]> queryResults = query(token);
-        ArrayList<Integer[]> output = new ArrayList<Integer[]>();
-        int index1=0, index2 = 0;
-        System.out.println("docIds:");
-        for(int i=0; i<docIds.size();i++) {
-            System.out.print(docIds.get(i)[0]+" ");
-        }
-        System.out.println();
-        System.out.println("queryResults:");
-        for(int i=0; i<queryResults.size();i++) {
-            System.out.print(queryResults.get(i)[0]+" ");
-        }
-        System.out.println();
-        while(index1 < queryResults.size() && index2 < docIds.size()) {
-            if(queryResults.get(index1)[0].equals(docIds.get(index2)[0])) {
-                output.add(queryResults.get(index1));
-                index1++;
-                index2++;
-            } else if(queryResults.get(index1)[0].intValue() < docIds.get(index2)[0].intValue()) {
-                index1++;
-            } else {
-                index2++;
-            }
-        }
-        return output;
-    }
+
+//
+//        System.out.println("docIds:");
+//        for(int i=0; i<docIds.size();i++) {
+//            System.out.print(docIds.get(i)[0]+" ");
+//        }
+//        System.out.println();
+//        System.out.println("queryResults:");
+//        for(int i=0; i<queryResults.size();i++) {
+//            System.out.print(queryResults.get(i)[0]+" ");
+//        }
+//        System.out.println();
+
+
 
     public ArrayList<Integer[]> query(String token)
     {
@@ -134,7 +136,7 @@ public class QueryProcessor {
     }
 
 
-    public ArrayList<Integer[]> queryPhrase(String phrase)
+    public ArrayList<Integer[]> queryPhrase(String phrase,int nearK)
     {
 
         String[] phraseTokens = phrase.replaceAll("^\"*|\"*$", "").split("\\s+");
@@ -198,11 +200,16 @@ public class QueryProcessor {
                     boolean found=false;
                     for(int x=1;x<termDoc.length;x++)
                     {
-                        if(termDoc[x]==basePos+offset)
+                        for(int k=0;k<nearK;k++)
                         {
-                            found=true;
-                            break;
+
+                            if(termDoc[x]==basePos+offset+k)
+                            {
+                                found=true;
+                                break;
+                            }
                         }
+
                     }
 //                    List<Integer> pos =new ArrayList<Integer>(Arrays.asList(termDoc));
 //                    pos=pos.subList(1,pos.size()-1);
@@ -221,42 +228,16 @@ public class QueryProcessor {
         return result;
     }
 
-
-//        ArrayList<Integer[]> firstPhraseToken = queryTokenIndex.get(0);
-//        for (int queryTokenindex1=0;queryTokenindex1<firstPhraseToken.size()-1;queryTokenindex1++)
-//        {
-//            int docIndex1=0;
-//            int docIndex2=0;
-//            if(queryTokenIndex.get(queryTokenindex1).get(docIndex1)[0] ==queryTokenIndex.get(queryTokenindex1+1).get(docIndex2)[0])
-//            {
-//
-//            }
-//            if(queryTokenIndex.get(queryTokenindex1).get(docIndex1)[0] <queryTokenIndex.get(queryTokenindex1+1).get(docIndex2)[0])
-//            {
-//                docIndex1++;
-//            }
-//            else
-//            {
-//                docIndex2++;
-//            }
-//        }
-
-
-
-
-//        return result;
-
-
     public ArrayList<Integer[]> orOperation(ArrayList<Integer[]> docIds, String token) {
         ArrayList<Integer[]> queryResults = query(token);
         ArrayList<Integer[]> output = new ArrayList<Integer[]>();
         int index1=0, index2 = 0;
         while(index1 < queryResults.size() && index2 < docIds.size()) {
-            if(queryResults.get(index1)[0] == docIds.get(index2)[0]) {
+            if(queryResults.get(index1)[0].equals(docIds.get(index2)[0])) {
                 output.add(queryResults.get(index1));
                 index1++;
                 index2++;
-            } else if(queryResults.get(index1)[0] < docIds.get(index2)[0]) {
+            } else if(queryResults.get(index1)[0].intValue() < docIds.get(index2)[0].intValue()) {
                 output.add(queryResults.get(index1));
                 index1++;
             } else {
@@ -283,10 +264,10 @@ public class QueryProcessor {
         ArrayList<Integer[]> output = new ArrayList<Integer[]>();
         int index1 = 0, index2 = 0;
         while(index1 < docIds.size()) {
-            if(docIds.get(index1) == queryResults.get(index2)) {
+            if(docIds.get(index1).equals(queryResults.get(index2))) {
                 index1++;
                 index2++;
-            } else if (docIds.get(index1)[0] < queryResults.get(index2)[0]) {
+            } else if (docIds.get(index1)[0].intValue() < queryResults.get(index2)[0].intValue()) {
                 output.add(docIds.get(index1));
                 index1++;
             } else {
@@ -296,13 +277,32 @@ public class QueryProcessor {
         return output;
     }
 
-//
-//    private Object[] extractPhraseQuery(String subQuery)
-//    {
-//        int startIndex=subQuery.indexOf("\"");
-//        int endIndex=subQuery.indexOf("\"",startIndex+1);
-//        System.out.println(startIndex+" "+endIndex);
-////        return new Object[] {subQuery.substring(startIndex, endIndex+1), startIndex,endIndex};
-//    }
+
+    public ArrayList<Integer[]> andOperation(ArrayList<Integer[]> docIds, String token) {
+        ArrayList<Integer[]> queryResults = query(token);
+        ArrayList<Integer[]> output = new ArrayList<Integer[]>();
+        int index1=0, index2 = 0;
+
+
+        if (queryResults==null || docIds==null)
+        {
+            return output;
+        }
+
+
+        while(index1 < queryResults.size() && index2 < docIds.size()) {
+            if(queryResults.get(index1)[0].equals(docIds.get(index2)[0])) {
+                output.add(queryResults.get(index1));
+                index1++;
+                index2++;
+            } else if(queryResults.get(index1)[0].intValue() < docIds.get(index2)[0].intValue()) {
+                index1++;
+            } else {
+                index2++;
+            }
+        }
+        return output;
+    }
+
 
 }
