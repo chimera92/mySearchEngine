@@ -55,7 +55,7 @@ class Main {
         System.out.println(":stem <token>");
         System.out.println(":index <dir_path>");
         System.out.println(":vocab");
-        System.out.println(":show <docName>");
+        System.out.println(":open <docName>");
         System.out.println("<query>");
         System.out.println(":corpusFromJSON <json filepath>");
         do {
@@ -67,7 +67,7 @@ class Main {
 
             String[] command = in.split("\\s+",2);
 
-            switch(command[0].toLowerCase()) {
+            switch(command[0].toLowerCase()) {                                  //Switch Menu to Search Engine
                 case ":q": moreInput=false;
                     break;
                 case ":stem":
@@ -87,6 +87,8 @@ class Main {
                     break;
 
                 case ":index":
+                    globalBiWordIndex.clear();
+                    globalPosIndex.clear();
                     if(command.length>1) {
                         executor = Executors.newFixedThreadPool(200);
                         CorpusFromDirectory corpusFromDirectory = new CorpusFromDirectory(globalPosIndex, globalBiWordIndex, command[1]);
@@ -98,6 +100,8 @@ class Main {
                         System.err.println("Missing filepath parameter!!");
                     break;
                 case ":corpusfromjson":
+                    globalBiWordIndex.clear();
+                    globalPosIndex.clear();
                     if(command.length<2)
                     {
                         System.err.println("Missing filepath parameter!!");

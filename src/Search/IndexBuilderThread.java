@@ -17,7 +17,7 @@ class IndexBuilderThread implements Runnable {
     private final int docId;
     private PorterStemmer stemmer;
 
-    public IndexBuilderThread(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex, Document doc)
+    public IndexBuilderThread(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex, Document doc)             //Constructor
     {
         this.doc = doc;
         this.docId = doc.getId();
@@ -26,7 +26,7 @@ class IndexBuilderThread implements Runnable {
         this.globalBiWordIndex = globalBiWordIndex;
     }
 
-    private String stem(String input)
+    private String stem(String input)                                           //method utilizes Porter Stemmer class to stem the input tokens
     {
         stemmer.setCurrent(input);
         stemmer.stem();
@@ -35,7 +35,7 @@ class IndexBuilderThread implements Runnable {
     }
 
     @Override
-    public void run()
+    public void run()                                                           //method enables thread runs to add the stemmed token to the desired the Position-Indexes
     {
 
         Map<String, ArrayList<Integer>> posIndex = new HashMap<String, ArrayList<Integer>>();

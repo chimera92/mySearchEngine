@@ -13,7 +13,7 @@ public class GlobalBiWordIndex {
     private ArrayList<Integer> tempList;
     private ArrayList<Integer> newList;
 
-    public GlobalBiWordIndex()
+    public GlobalBiWordIndex()                                                  //Constructor
     {
         universalIndex = Collections.synchronizedMap(new HashMap<String,ArrayList<Integer>>());
         tempList =new ArrayList<Integer>();
@@ -21,11 +21,17 @@ public class GlobalBiWordIndex {
 
     }
 
+    public void clear()                             //to refresh the Postional Index
+    {
+        universalIndex.clear();
+    }
 
-    public ArrayList<Integer[]> getBiwordPosting(String key)
+    public ArrayList<Integer[]> getBiwordPosting(String key)                    //Get the posting list fromt the BiWord index
     {
         ArrayList<Integer[]> returnVal=new ArrayList<>();
+
         ArrayList<Integer> docIds =universalIndex.get(key);
+
         for(Integer docId:docIds)
         {
             Integer[] tempPostingEntry=new Integer[1];
@@ -36,7 +42,7 @@ public class GlobalBiWordIndex {
         return returnVal;
     }
 
-    public void add(String key, Integer docID)
+    public void add(String key, Integer docID)                                  //token insertion into data structure as keys
     {
         synchronized (universalIndex)
         {
@@ -55,7 +61,7 @@ public class GlobalBiWordIndex {
         }
     }
 
-    private ArrayList binInsert(ArrayList<Integer> tempListP, Integer docID)
+    private ArrayList binInsert(ArrayList<Integer> tempListP, Integer docID)                //Insertion using Binary Search to sequentially arrange doc ids in ascending order
     {
         Integer insertPos;
         if(tempListP.size()==1)
@@ -79,7 +85,7 @@ public class GlobalBiWordIndex {
         return tempListP;
     }
 
-    private int searchSortedInsertPos(ArrayList<Integer> tempListP, int startP, int endP, Integer docId)
+    private int searchSortedInsertPos(ArrayList<Integer> tempListP, int startP, int endP, Integer docId)            //insertion of token position in the data structure as in the document
     {
 
         if(endP==startP+1)

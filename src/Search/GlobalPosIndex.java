@@ -16,14 +16,15 @@ class GlobalPosIndex {
     private ArrayList<Integer[]> tempList;
     private ArrayList<Integer[]> newList;
 
-    public GlobalPosIndex()
+    public GlobalPosIndex()                         //Constructor
     {
         universalIndex = Collections.synchronizedMap(new HashMap<String,ArrayList<Integer[]>>());
         tempList =new ArrayList<Integer[]>();
         newList =new ArrayList<Integer[]>();
 
     }
-    public void clear()
+
+    public void clear()                             //to refresh the Postional Index
     {
         universalIndex.clear();
     }
