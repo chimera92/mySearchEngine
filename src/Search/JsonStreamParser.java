@@ -24,18 +24,18 @@ class JsonStreamParser {
 
 
 
-    public JsonStreamParser(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex,String ipFile) throws  IOException {
+    public JsonStreamParser(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex,String ipFile) throws  IOException {             //Constructor
         this.globalPosIndex = globalPosIndex;
         this.globalBiWordIndex = globalBiWordIndex;
         reader = new JsonReader(new InputStreamReader(new FileInputStream(new File(ipFile)), "UTF-8"));
         this.ipFile = ipFile;
     }
 
-    private int generateDocId()
+    private int generateDocId()                                                                 //method keeps track of document numbers
     {
         return docCount++;
     }
-    private void submitJobs(Document doc)
+    private void submitJobs(Document doc)                                       //to assign or submit job to the thread pool to write document to secondary storage without stemming
     {
         Runnable indexJob = new IndexBuilderThread(globalPosIndex,globalBiWordIndex,doc);
         Runnable writeJob = new DocumentWriterThread(doc);
@@ -43,7 +43,7 @@ class JsonStreamParser {
         Main.submitJob(writeJob);
     }
 
-    public void start() throws IOException
+    public void start() throws IOException                                      //start method to initiate corpus processing by parsing JSON file and breaking it into documents
     {
         Gson gson = new GsonBuilder().create();
         // Read file in stream mode

@@ -29,7 +29,7 @@ class GlobalPosIndex {
         universalIndex.clear();
     }
 
-    public void add(String key, Integer[] posArray)
+    public void add(String key, Integer[] posArray)                         //token insertion into data structure as keys
     {
         synchronized (universalIndex)
         {
@@ -48,7 +48,7 @@ class GlobalPosIndex {
         }
     }
 
-    private ArrayList binInsert(ArrayList<Integer[]> tempListP, Integer[] postingArray)
+    private ArrayList binInsert(ArrayList<Integer[]> tempListP, Integer[] postingArray)                     //Insertion using Binary Search to sequentially arrange doc ids in ascending order
     {
         Integer insertPos;
         if(tempListP.size()==1)
@@ -73,7 +73,7 @@ class GlobalPosIndex {
         return tempListP;
     }
 
-    private int searchSortedInsertPos(ArrayList<Integer[]> tempListP, int startP, int endP, Integer[] elementP)
+    private int searchSortedInsertPos(ArrayList<Integer[]> tempListP, int startP, int endP, Integer[] elementP)             //insertion of token position in the data structure as in the document
     {
 
         if(endP==startP+1)
@@ -112,7 +112,7 @@ class GlobalPosIndex {
     }
 
 
-    public void showVocab(){
+    public void showVocab(){                                                                        //to list the vocabulary as in the postion index with token count
         System.out.println("\nWords in the Vocabulary:");
         for(String str : universalIndex.keySet()){
             System.out.println(str);

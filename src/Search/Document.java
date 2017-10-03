@@ -3,6 +3,8 @@ package Search;
 /**
  * Created by chimera on 9/9/17.
  */
+
+// Class to maintain the data and functionality of a Document
 @SuppressWarnings({"DefaultFileTemplate", "unused"})
 class Document {
     private String body;
