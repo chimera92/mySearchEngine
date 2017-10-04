@@ -15,15 +15,18 @@ public class CorpusFromDirectory {
 
     private static int docCount=0;
 
-    public CorpusFromDirectory(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex, String filePath) throws IOException{         //Constructor to Initialize Position-Indexes and FilePath
+    public CorpusFromDirectory(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex, String filePath) throws IOException              //Constructor to Initialize Position-Indexes and FilePath
+    {
         this.globalPosIndex = globalPosIndex;
         this.globalBiWordIndex = globalBiWordIndex;
         root = new File(filePath);
         this.filePath = filePath;
     }
 
-    public void parseFilesNFolders(File folder) {                   //To Access all folder sub-directory and files in th given file path
-        for (File fileEntry : folder.listFiles()) {
+    public void parseFilesNFolders(File folder)                             //To Access all folder sub-directory and files in th given file path
+    {
+        for (File fileEntry : folder.listFiles())
+        {
 
             if (fileEntry.isDirectory()) {
                 parseFilesNFolders(fileEntry);

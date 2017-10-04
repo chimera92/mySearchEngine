@@ -10,7 +10,10 @@ import java.nio.file.Paths;
 
 
 @SuppressWarnings("DefaultFileTemplate")
-class DocumentWriterThread implements Runnable{
+
+//Class to run Document writing threads
+class DocumentWriterThread implements Runnable
+{
     private final Document doc;
     DocumentWriterThread(Document doc)
     {
@@ -25,9 +28,11 @@ class DocumentWriterThread implements Runnable{
         //noinspection ResultOfMethodCallIgnored
         file.getParentFile().mkdirs();
 
-        try {
+        try
+        {
             Files.write(Paths.get(file.toString()),doc.getBody().getBytes());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 

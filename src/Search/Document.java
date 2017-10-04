@@ -4,9 +4,12 @@ package Search;
  * Created by chimera on 9/9/17.
  */
 
-// Class to maintain the data and functionality of a Document
 @SuppressWarnings({"DefaultFileTemplate", "unused"})
-class Document {
+
+// Class to maintain the data and functionality of a Document
+
+class Document
+{
     private String body;
     private String title;
     private int id;
@@ -14,23 +17,28 @@ class Document {
 
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "\"title\" = \"" + title+"\" ::: \"body\" = \""+ body+"\"}";
     }
 
-    public  String getTitle() {
+    public  String getTitle()
+    {
         return title;
     }
 
-    public  void setTitle(String title) {
+    public  void setTitle(String title)
+    {
         this.title=title;
     }
 
-    public  String getBody() {
+    public  String getBody()
+    {
         return body;
     }
 
-    public  void setBody(String body) {
+    public  void setBody(String body)
+    {
         this.body=body;
     }
 
@@ -38,7 +46,8 @@ class Document {
     {
         this.id=id;
     }
-    public int getId(){
+    public int getId()
+    {
         return id;
     }
     public void setUrl(String url)

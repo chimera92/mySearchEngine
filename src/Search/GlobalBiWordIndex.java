@@ -8,25 +8,29 @@ import java.util.Map;
 /**
  * Created by chimera on 9/25/17.
  */
-public class GlobalBiWordIndex {
+public class GlobalBiWordIndex
+{
     private final Map<String,ArrayList<Integer>> universalIndex;
     private ArrayList<Integer> tempList;
     private ArrayList<Integer> newList;
 
     public GlobalBiWordIndex()                                                  //Constructor
     {
+        /*The structure used is a HashMap with keys as token of String type and values as ArrayList of Integer Array
+        * where the ArrayList object depicts the Document and its Integer Array has the first entry as the docID and rest as the positions*/
         universalIndex = Collections.synchronizedMap(new HashMap<String,ArrayList<Integer>>());
+
         tempList =new ArrayList<Integer>();
         newList =new ArrayList<Integer>();
 
     }
 
-    public void clear()                             //to refresh the Postional Index
+    public void clear()                             //to refresh the Positional Index
     {
         universalIndex.clear();
     }
 
-    public ArrayList<Integer[]> getBiwordPosting(String key)                    //Get the posting list fromt the BiWord index
+    public ArrayList<Integer[]> getBiwordPosting(String key)                    //Get the posting list from the BiWord index
     {
         ArrayList<Integer[]> returnVal=new ArrayList<>();
 
@@ -76,7 +80,8 @@ public class GlobalBiWordIndex {
                 insertPos=1;
             }
         }
-        else {
+        else
+        {
             insertPos = searchSortedInsertPos(tempListP,0,tempListP.size()-1,docID);
         }
 
@@ -87,7 +92,6 @@ public class GlobalBiWordIndex {
 
     private int searchSortedInsertPos(ArrayList<Integer> tempListP, int startP, int endP, Integer docId)            //insertion of token position in the data structure as in the document
     {
-
         if(endP==startP+1)
         {
             if(tempListP.get(endP)<docId)

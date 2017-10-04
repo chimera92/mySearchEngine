@@ -21,10 +21,8 @@ class JsonStreamParser {
     private static int docCount=0;
 
 
-
-
-
-    public JsonStreamParser(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex,String ipFile) throws  IOException {             //Constructor
+    public JsonStreamParser(GlobalPosIndex globalPosIndex, GlobalBiWordIndex globalBiWordIndex,String ipFile) throws  IOException               //Constructor
+    {
         this.globalPosIndex = globalPosIndex;
         this.globalBiWordIndex = globalBiWordIndex;
         reader = new JsonReader(new InputStreamReader(new FileInputStream(new File(ipFile)), "UTF-8"));
@@ -35,6 +33,7 @@ class JsonStreamParser {
     {
         return docCount++;
     }
+
     private void submitJobs(Document doc)                                       //to assign or submit job to the thread pool to write document to secondary storage without stemming
     {
         Runnable indexJob = new IndexBuilderThread(globalPosIndex,globalBiWordIndex,doc);
@@ -61,6 +60,6 @@ class JsonStreamParser {
             submitJobs(doc);
         }
         reader.close();
-        }
     }
+}
 

@@ -11,7 +11,8 @@ import java.util.Map;
 
 
 @SuppressWarnings("DefaultFileTemplate")
-class GlobalPosIndex {
+class GlobalPosIndex
+{
     private final Map<String,ArrayList<Integer[]>> universalIndex;
     private ArrayList<Integer[]> tempList;
     private ArrayList<Integer[]> newList;
@@ -44,7 +45,6 @@ class GlobalPosIndex {
                 newList.add(posArray);
                 universalIndex.put(key, (ArrayList<Integer[]>) newList.clone());
             }
-
         }
     }
 
@@ -64,7 +64,8 @@ class GlobalPosIndex {
                 insertPos=1;
             }
         }
-        else {
+        else
+        {
             insertPos = searchSortedInsertPos(tempListP,0,tempListP.size()-1,postingArray);
         }
 
@@ -101,20 +102,21 @@ class GlobalPosIndex {
         }
     }
 
-    public ArrayList<Integer[]> get(String token)
+    public ArrayList<Integer[]> get(String token)                               //getter for Universal Index
     {
         return universalIndex.get(token);
     }
 
-    public void printLen()
+    public void printLen()                                                      //method to print the size of the size
     {
         System.out.println(universalIndex.keySet().size());
     }
 
 
-    public void showVocab(){                                                                        //to list the vocabulary as in the postion index with token count
+    public void showVocab(){                                                    //to list the vocabulary as in the postion index with token count
         System.out.println("\nWords in the Vocabulary:");
-        for(String str : universalIndex.keySet()){
+        for(String str : universalIndex.keySet())
+        {
             System.out.println(str);
         }
         System.out.println("\nCount of Words in Vocabulary: "+universalIndex.keySet().size());
