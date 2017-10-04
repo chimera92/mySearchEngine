@@ -31,7 +31,6 @@ class IndexBuilderThread implements Runnable
     {
         stemmer.setCurrent(input);
         stemmer.stem();
-//            System.out.println(stemmer.getCurrent());
         return stemmer.getCurrent();
     }
 

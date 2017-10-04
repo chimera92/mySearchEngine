@@ -33,7 +33,6 @@ class JsonStreamParser {
     {
         return docCount++;
     }
-
     private void submitJobs(Document doc)                                       //to assign or submit job to the thread pool to write document to secondary storage without stemming
     {
         Runnable indexJob = new IndexBuilderThread(globalPosIndex,globalBiWordIndex,doc);

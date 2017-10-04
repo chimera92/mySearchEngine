@@ -26,7 +26,6 @@ class Main
     {
         stemmer.setCurrent(input);
         stemmer.stem();
-//            System.out.println(stemmer.getCurrent());
         return stemmer.getCurrent();
     }
 
@@ -139,7 +138,7 @@ class Main
                     {
                         System.out.println(x[0].intValue()+".txt");
                     }
-                    System.out.println("Documents retrived : "+ result.size());
+                    System.out.println("Documents retrieved : "+ result.size());
                     System.out.println();
                     break;
             }

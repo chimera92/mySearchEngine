@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * Created by chimera on 9/25/17.
  */
 
-//Qyery Processing Class
+//Query Processing Class
 public class QueryProcessor
 {
     private final GlobalPosIndex globalPosIndex;
@@ -47,7 +47,6 @@ public class QueryProcessor
             if(matcher.find()) {
 
                 String extractedQuery = matcher.group(2);
-//            System.out.println(matcher.group(1)+".."+matcher.group(2)+".."+matcher.group(3));
                 queryMap.put("^_^" + extractedQuery.hashCode(), parseSimpleQuery(extractedQuery));
                 query = matcher.group(1) + " ^_^" + extractedQuery.hashCode() + " " + matcher.group(3);
                 System.out.println(query);
@@ -72,7 +71,6 @@ public class QueryProcessor
         //if there is no closing quotes, ignore opening quote.
         //populate all lists.
         //Keep ORing the results hence obtained.
-//        System.out.println(query);
 
 
         ArrayList<Integer[]> docList;
@@ -80,7 +78,6 @@ public class QueryProcessor
         ArrayList<ArrayList<Integer[]>> toBeOrEdList=new ArrayList<>();
         for(String subQuery:subQueries)
         {
-//            System.out.println(subQuery);
             toBeOrEdList.add(processOrLessQuery(subQuery));
         }
 
@@ -96,10 +93,8 @@ public class QueryProcessor
         boolean phraseBuffFlag=false;
         for(String subAtomicQuery:subQuery.trim().split("\\s+"))
         {
-//            if (subAtomicQuery.startsWith("^_^"))
             subAtomicQuery=subAtomicQuery.trim();
 
-//            System.out.println(subAtomicQuery);
             if (subAtomicQuery.matches("[^\"]*\"[^\"]*"))
             {
                 if(phraseBuffFlag==false)
@@ -121,17 +116,8 @@ public class QueryProcessor
             }
             else
             {
-//                if(subAtomicQuery.matches("^-?\\^_\\^.*"))
-//                {
-//                    AtomicQueries.add(subAtomicQuery);
-//                }
-//                else
-//                {//remove stem at this level.
-//                    subAtomicQuery=subAtomicQuery.toLowerCase().replaceAll("^\\W+|\\W+$|'","");
-                    AtomicQueries.add(subAtomicQuery);
-
-//                }
-             }
+                AtomicQueries.add(subAtomicQuery);
+            }
         }
 
         ArrayList<ArrayList<Integer[]>> negQueriesPosList = new ArrayList();
@@ -147,7 +133,6 @@ public class QueryProcessor
                 }
                 else
                 {
-//                    q=q.substring(1).replaceAll("^\\W+|\\W+$|'","");;
                     negQueriesPosList.add(query(q.substring(1)));
                 }
 
@@ -160,7 +145,6 @@ public class QueryProcessor
                 }
                 else
                 {
-//                    q=q.replaceAll("^\\W+|\\W+$|'","");
                     posQueriesPosList.add(query(q));
                 }
             }
@@ -180,7 +164,6 @@ public class QueryProcessor
     {
         stemmer.setCurrent(input);
         stemmer.stem();
-//            System.out.println(stemmer.getCurrent());
         return stemmer.getCurrent();
     }
 
@@ -210,11 +193,8 @@ public class QueryProcessor
         if(matcher.find())
         {
             nearK = Integer.parseInt(matcher.group(2));
-//            System.out.println(matcher.group(2));
             phrase =matcher.group(1)+" "+matcher.group(3);
         }
-
-
 
         String[] phraseTokens = phrase.replaceAll("^\"*|\"*$", "").split("\\s+");
 
@@ -228,7 +208,6 @@ public class QueryProcessor
         if(phraseTokens.length==2 && nearK==1)                                          //to decipher a BiWord Query as Two tokens with Near/K set to 1
         {
             String biWordKey=String.join(" ",phraseTokens);
-            System.out.println("!!!!!!!!!!");
             return globalBiWordIndex.getBiwordPosting(biWordKey);
         }
 
@@ -304,8 +283,6 @@ public class QueryProcessor
                             break;
                         }
                     }
-//                    List<Integer> pos =new ArrayList<Integer>(Arrays.asList(termDoc));
-//                    pos=pos.subList(1,pos.size()-1);
                     phraseFound=found && phraseFound;
                     offset++;
                 }
@@ -330,7 +307,6 @@ public class QueryProcessor
 
     public ArrayList<Integer[]> orOperation(ArrayList<Integer[]> docIds1, ArrayList<Integer[]> docIds2)     //or operation to return the list of documents in order form after OR processing
     {
-//        ArrayList<Integer[]> queryResults = query(token);
         ArrayList<Integer[]> output = new ArrayList<Integer[]>();
         int index1=0, index2 = 0;
         if(docIds1 == null && docIds2 == null)
