@@ -10,7 +10,6 @@ import java.util.Map;
  */
 
 
-@SuppressWarnings("DefaultFileTemplate")
 class GlobalPosIndex
 {
     private final Map<String,ArrayList<Integer[]>> universalIndex;

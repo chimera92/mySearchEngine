@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 
 /* Class to Handle Position-Index from Directory Path entered by User*/
 
+
 public class CorpusFromDirectory {
 
     private final GlobalPosIndex globalPosIndex;

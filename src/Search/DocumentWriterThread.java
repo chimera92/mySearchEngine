@@ -9,7 +9,6 @@ import java.nio.file.Paths;
  */
 
 
-@SuppressWarnings("DefaultFileTemplate")
 
 //Class to run Document writing threads
 class DocumentWriterThread implements Runnable

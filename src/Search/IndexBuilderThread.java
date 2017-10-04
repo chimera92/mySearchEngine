@@ -8,7 +8,6 @@ import java.util.*;
 /**
  * Created by chimera on 9/11/17.
  */
-@SuppressWarnings("DefaultFileTemplate")
 class IndexBuilderThread implements Runnable
 {
 

@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 /**
  * Created by chimera on 9/11/17.
  */
-@SuppressWarnings("DefaultFileTemplate")
 class JsonStreamParser {
 
     private final GlobalPosIndex globalPosIndex;

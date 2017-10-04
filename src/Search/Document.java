@@ -4,7 +4,6 @@ package Search;
  * Created by chimera on 9/9/17.
  */
 
-@SuppressWarnings({"DefaultFileTemplate", "unused"})
 
 // Class to maintain the data and functionality of a Document
 

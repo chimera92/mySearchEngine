@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * Created by chimera on 9/25/17.
  */
+
 public class GlobalBiWordIndex
 {
     private final Map<String,ArrayList<Integer>> universalIndex;

@@ -128,7 +128,7 @@ class Main
 
                 default:
                     if(noCorpus) {
-                        System.out.println("Corpus Undefined\ntry \n:corpusFromJSON\nOR\n:index <directory_path>\n");
+                        System.out.println("Corpus Undefined..!\ntry \n:corpusFromJSON\nOR\n:index <directory_path>\n");
                         break;
                     }
                     ArrayList<Integer[]> result = qp.parseCompoundQuery(in.toLowerCase());
