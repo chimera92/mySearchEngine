@@ -206,11 +206,11 @@ public class QueryProcessor
             phraseTokens[i]=this.stem(temp);
         }
 
-        if(phraseTokens.length==2 && nearK==1)                                          //to decipher a BiWord Query as Two tokens with Near/K set to 1
-        {
-            String biWordKey=String.join(" ",phraseTokens);
-            return globalBiWordIndex.getBiwordPosting(biWordKey);
-        }
+//        if(phraseTokens.length==2 && nearK==1)                                          //to decipher a BiWord Query as Two tokens with Near/K set to 1
+//        {
+//            String biWordKey=String.join(" ",phraseTokens);
+//            return globalBiWordIndex.getBiwordPosting(biWordKey);
+//        }
 
         HashSet<Integer> docsToBeScanned = new HashSet<>();
 

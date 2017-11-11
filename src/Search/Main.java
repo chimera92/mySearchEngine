@@ -12,7 +12,6 @@ class Main
 
     private static ExecutorService executor=null;
     private static PorterStemmer stemmer=new PorterStemmer();
-    public static CountDownLatch latch;
     private static boolean noCorpus = true;
 
 
@@ -61,6 +60,7 @@ class Main
         do
         {
 
+            System.out.println();
             System.out.println("Enter an input :");
             System.out.println();
 
