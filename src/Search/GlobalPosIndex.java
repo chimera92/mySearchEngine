@@ -82,10 +82,16 @@ class GlobalPosIndex
             {
                 return endP+1;
             }
-            else
-            {
+            else {
+
+                if(elementP[0]<tempListP.get(startP)[0])
+                {
+                    return startP;
+                }
+
                 return endP;
             }
+
         }
         
         int midL=(startP+endP)/2;
