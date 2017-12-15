@@ -109,13 +109,13 @@ class Main
                 case ":corpusfromjson":
                     globalBiWordIndex.clear();
                     globalPosIndex.clear();
-                    if(command.length<2)
-                    {
-                        System.err.println("Missing filepath parameter!!");
-                        break;
-                    }
+//                    if(command.length<2)
+//                    {
+//                        System.err.println("Missing filepath parameter!!");
+//                        break;
+//                    }
                     executor = Executors.newFixedThreadPool(200);
-                    JsonStreamParser parser = new JsonStreamParser(globalPosIndex,globalBiWordIndex,command[1]);
+                    JsonStreamParser parser = new JsonStreamParser(globalPosIndex,globalBiWordIndex,"all-nps-sites.json");
                     parser.start();
                     executor.shutdown();
                     executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MICROSECONDS);
