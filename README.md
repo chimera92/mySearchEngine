@@ -1,29 +1,26 @@
-# README #
+#Search engine with multi-threaded indexing and complex phrase query support!
 
-This README would normally document whatever steps are necessary to get your application up and running.
+#*Run main and enter one of the below two inputs:
 
-### What is this repository for? ###
+    Builds an index over a sample corpus of 37000 documents. 
+#:corpusFromJSON
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+    Builds an index over the files in the specified directory
+#:index <dir_path>
 
-### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+#*You can now start querying..!
+### At any point, use the below to print the contents of a file
+##:open <file_name_from_search_result.txt>
+##open 1.txt
 
-### Contribution guidelines ###
+##Sample queries
 
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+    Boolean AND query 
+### Park National
+    Phrase query (Quotes are inclusive!)
+### "Park National"
+    NOT  query
+###"park national" -"national park"
+    Complex query
+###((park + volcano) eruption) + "wild fire" 
