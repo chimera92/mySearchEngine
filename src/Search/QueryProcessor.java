@@ -40,7 +40,7 @@ public class QueryProcessor
     {
         Pattern pattern = Pattern.compile("^(.*?)\\(([^\\(\\)]*)\\)(.*?)$");
         queryMap=new HashMap<String, ArrayList<Integer[]>>();
-        System.out.println(query);
+//        System.out.println(query);
 
         while(query.contains("("))
         {
@@ -50,7 +50,7 @@ public class QueryProcessor
                 String extractedQuery = matcher.group(2);
                 queryMap.put("^_^" + extractedQuery.hashCode(), parseSimpleQuery(extractedQuery));
                 query = matcher.group(1) + " ^_^" + extractedQuery.hashCode() + " " + matcher.group(3);
-                System.out.println(query);
+//                System.out.println(query);
             }
             else
             {

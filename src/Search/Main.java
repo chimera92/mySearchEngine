@@ -56,7 +56,8 @@ class Main
         System.out.println(":vocab");
         System.out.println(":open <docName>");
         System.out.println("<query>");
-        System.out.println(":corpusFromJSON <json filepath>");
+        System.out.println(":corpusFromJSON");
+//        System.out.println(":corpusFromJSON <JSON path>");
         do
         {
 
@@ -115,10 +116,13 @@ class Main
 //                        break;
 //                    }
                     executor = Executors.newFixedThreadPool(200);
+//                    JsonStreamParser parser = new JsonStreamParser(globalPosIndex,globalBiWordIndex,command[1]);
+                    System.out.println("Indexing Initiated!! This might take a minute or two.");
                     JsonStreamParser parser = new JsonStreamParser(globalPosIndex,globalBiWordIndex,"all-nps-sites.json");
                     parser.start();
                     executor.shutdown();
                     executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MICROSECONDS);
+                    System.out.println("Indexing Done!");
                     noCorpus=false;
                     break;
 
