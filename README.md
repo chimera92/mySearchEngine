@@ -5,7 +5,7 @@
 ### -Builds an index over a sample corpus of 37000 documents. 
     :corpusFromJSON
 
-###-Builds an index over the files in the specified directory
+### -Builds an index over the files in the specified directory
     :index <dir_path>
 
 
